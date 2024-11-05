@@ -80,6 +80,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 import { ref } from 'vue'
 
 // converted form_input
+// for these variables i just matched with the previous options code and reformatted
 const form_input = ref({
   start_dt: "",
   end_dt: "",
@@ -142,9 +143,12 @@ const fetch_remote_data = async () => {
   try {
     const resp = await axios.request(options);
     const w_data = resp.data.forecast.forecastday;
+
+    // gets the data from the form boxes
     keys.value = w_data.map((item) => item.date);
     values.value = w_data.map((item) => item.day.avgtemp_f);
 
+    // updates chart
     chart_data.value = {
       labels: keys.value,
       datasets: [
@@ -164,5 +168,8 @@ const fetch_remote_data = async () => {
 <!--
 ChatGPT was used for this exam to help find errors and improve code
 prompt used: "can you fix the errors and improve this code. It should be in composition API <code>"
+
+on last exam i got a zero because npm run dev did not work/run. I think i was able to solve it
+this time around. I was able to run npm run dev and got the web app worked perfectly
 -->
 
