@@ -60,10 +60,9 @@ table, th, td {
   border: 1px solid black;
   border-collapse: collapse;
 }
+
 </style>
-
-<script>
-
+<script setup>
 import axios from "axios";
 
 import {
@@ -78,108 +77,92 @@ import {
 import { Bar } from 'vue-chartjs'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+import { ref } from 'vue'
 
-export default {
-    components: {
-        // Line
-        //BarChart: Bar,
-        Bar,
+// converted form_input
+const form_input = ref({
+  start_dt: "",
+  end_dt: "",
+  location: "",
+});
+
+// converted chart_options - for bar chart configuration
+const chart_options = ref({
+  responsive: true,
+  maintainAspectRatio: true,
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: "Time",
+      },
     },
-    
-    data() {
-        return {
-            form_input: {
-                start_dt: "",
-                end_dt: "",
-                location: "",
-            },
-
-            chart_options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: "Time",
-                        },
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: "Temperature (F)",
-                        },
-                    },
-                },
-            },
-
-            chart_data: {
-                labels: [], 
-                datasets: [
-                    {
-                        label: "Average Temperature", 
-                        backgroundColor: "#f87979", 
-                        data: [], 
-                    },
-                ],
-            },
-            dataLoaded: false,
-            
-            keys: [],
-            values: [],
-            // daily_temp: {},
-        };
+    y: {
+      title: {
+        display: true,
+        text: "Temperature (F)",
+      },
     },
+  },
+});
 
-    methods: {
-        // https://rapidapi.com/weatherapi/api/weatherapi-com/
-        async fetch_remote_data() {
-            const options = {
-                method: 'GET',
-                url: 'https://weatherapi-com.p.rapidapi.com/history.json',
-                params: {
-                    q: this.form_input.location,
-                    dt: this.form_input.start_dt,
-                    end_dt: this.form_input.end_dt,
-                    lang: 'en'
-                },
-                headers: {
-                    'X-RapidAPI-Key': '6c6f790650msh5ce4da2fced77a7p1b1776jsn247d9f531b74',
-                    'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
-                }
-            };
-            
-            try {
-                await axios.request(options).then((resp) => {
-                    // this.keys.forEach((element, index) => {
-                    //    this.daily_temp[element] = this.values[index];
-                    // });
-                    // console.log(this.daily_temp);
-
-                    const w_data = resp.data.forecast.forecastday; 
-                    this.keys = w_data.map((item) => item.date);
-                    this.values = w_data.map((item) => item.day.avgtemp_f);
-
-                    
-                    this.chart_data = {
-                        labels: this.keys, 
-                        datasets: [
-                            {
-                                label: "Average Temperature", 
-                                backgroundColor: "#f87979", 
-                                data: this.values, 
-                            },
-                        ],
-                    },
-                    
-                    this.dataLoaded = true;
-                })
-            } catch (error) {
-                console.error(error);
-            }
-            
-        }
+// converted chart_data to composition API
+const chart_data = ref({
+  labels: [],
+  datasets: [
+    {
+      label: "Average Temperature",
+      backgroundColor: "#f87979",
+      data: [],
     },
-}
+  ],
+});
 
+const dataLoaded = ref(false);
+const keys = ref([]);
+const values = ref([]);
+
+// converted call to api
+const fetch_remote_data = async () => {
+  const options = {
+    method: 'GET',
+    url: 'https://weatherapi-com.p.rapidapi.com/history.json',
+    params: {
+      q: form_input.value.location,
+      dt: form_input.value.start_dt,
+      end_dt: form_input.value.end_dt,
+      lang: 'en',
+    },
+    headers: {
+      'X-RapidAPI-Key': '6c6f790650msh5ce4da2fced77a7p1b1776jsn247d9f531b74',
+      'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
+    },
+  };
+
+  try {
+    const resp = await axios.request(options);
+    const w_data = resp.data.forecast.forecastday;
+    keys.value = w_data.map((item) => item.date);
+    values.value = w_data.map((item) => item.day.avgtemp_f);
+
+    chart_data.value = {
+      labels: keys.value,
+      datasets: [
+        {
+          label: "Average Temperature",
+          backgroundColor: "#f87979",
+          data: values.value,
+        },
+      ],
+    };
+    dataLoaded.value = true;
+  } catch (error) {
+    console.error(error);
+  }
+};
 </script>
+<!--
+ChatGPT was used for this exam to help find errors and improve code
+prompt used: "can you fix the errors and improve this code. It should be in composition API <code>"
+-->
+
