@@ -171,5 +171,8 @@ prompt used: "can you fix the errors and improve this code. It should be in comp
 
 on last exam i got a zero because npm run dev did not work/run. I think i was able to solve it
 this time around. I was able to run npm run dev and got the web app worked perfectly
+
+Last exam when i ran npm install, i got some vulnerabilities and ran npm audit fix, and i think that messed up
+the exam. This time i just ran it one time and left the vulnerabilities alone.
 -->
 
